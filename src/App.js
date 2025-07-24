@@ -58,7 +58,7 @@ function App() {
 
   return (
     <div style={{ padding: "20px", fontFamily: "Arial" }}>
-      <h1>Tee Time Booking</h1>
+      <h1>CMW Tee Time Booking Demo</h1>
       <table border="1" cellPadding="10">
         <thead>
           <tr>
