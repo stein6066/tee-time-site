@@ -106,11 +106,38 @@ function App() {
       </div>
 
       <div style={{ overflowX: 'auto' }}>
-        <table style={{ width: '100%', minWidth: '360px', borderCollapse: 'collapse', background: '#ffffff', borderRadius: '10px', boxShadow: '0 2px 8px rgba(0,0,0,0.1)' }}>
+        <table style={{
+  width: '100%',
+  tableLayout: 'fixed',
+  borderCollapse: 'collapse',
+  background: '#ffffff',
+  borderRadius: '10px',
+  boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
+}}>
+
           <thead>
             <tr style={{ backgroundColor: '#4CAF50', color: 'white', fontFamily: '"Segoe UI", sans-serif' }}>
-              <th style={{ padding: '12px', textAlign: 'left', borderTopLeftRadius: '10px', fontSize: '1rem', fontWeight: '600' }}>Tee Time</th>
-              <th colSpan="4" style={{ padding: '12px', textAlign: 'center', borderTopRightRadius: '10px', fontSize: '1rem', fontWeight: '600' }}>Players</th>
+              <th style={{
+  width: '80px',
+  padding: '12px',
+  textAlign: 'left',
+  borderTopLeftRadius: '10px',
+  fontSize: '0.9rem',
+  fontWeight: '600'
+}}>
+  Tee Time
+</th>
+
+              <th colSpan="4" style={{
+  padding: '12px',
+  textAlign: 'center',
+  borderTopRightRadius: '10px',
+  fontSize: '0.9rem',
+  fontWeight: '600'
+}}>
+  Players
+</th>
+
             </tr>
           </thead>
           <tbody>

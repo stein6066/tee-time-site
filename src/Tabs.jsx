@@ -2,7 +2,16 @@ import React from "react";
 
 function Tabs({ days, selectedDate, onSelect }) {
   return (
-    <div style={{ display: "flex", gap: "10px", marginBottom: "20px" }}>
+    <div
+  style={{
+    display: "flex",
+    flexWrap: "wrap",
+    gap: "8px",
+    justifyContent: "center",
+    marginBottom: "16px",
+  }}
+>
+
       {days.map((date) => (
         <button
           key={date}

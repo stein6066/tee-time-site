@@ -13,9 +13,10 @@
 
 .modal-content {
   background: #fff;
-  padding: 25px;
+  padding: 20px;
   border-radius: 12px;
-  width: 350px;
+  width: 90%;
+  max-width: 400px;
   max-height: 90vh;
   overflow-y: auto;
   box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
@@ -23,64 +24,71 @@
 }
 
 .modal-content h2 {
-  margin-bottom: 20px;
+  margin-bottom: 16px;
   color: #2f855a;
+  font-size: 1.2rem;
+  text-align: center;
 }
 
 .player-section {
-  margin-bottom: 18px;
+  margin-bottom: 16px;
 }
 
 .player-section label {
   font-weight: 600;
   display: block;
   margin-bottom: 4px;
+  font-size: 0.85rem;
 }
 
 .player-section input {
   width: 100%;
-  padding: 6px;
+  padding: 6px 8px;
   border-radius: 6px;
   border: 1px solid #ccc;
   margin-bottom: 8px;
+  font-size: 0.9rem;
 }
 
 .select-row {
   display: flex;
-  justify-content: space-between;
+  flex-direction: column;
   gap: 12px;
 }
 
 .select-row select {
   width: 100%;
-  padding: 6px;
+  padding: 6px 8px;
   border-radius: 6px;
   border: 1px solid #ccc;
+  font-size: 0.9rem;
 }
 
 .modal-buttons {
   display: flex;
   justify-content: space-between;
+  gap: 12px;
   margin-top: 20px;
+}
+
+.confirm-btn,
+.cancel-btn {
+  flex: 1;
+  font-size: 0.9rem;
+  font-weight: bold;
+  padding: 10px;
+  border: none;
+  border-radius: 6px;
+  color: white;
+  cursor: pointer;
 }
 
 .confirm-btn {
   background-color: #2f855a;
-  color: white;
-  border: none;
-  padding: 10px 14px;
-  border-radius: 6px;
-  font-weight: bold;
-  cursor: pointer;
 }
 
 .cancel-btn {
   background-color: #e53e3e;
-  color: white;
-  border: none;
-  padding: 10px 14px;
-  border-radius: 6px;
-  font-weight: bold;
-  cursor: pointer;
 }
+
 
