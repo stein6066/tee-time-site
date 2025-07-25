@@ -1,9 +1,8 @@
-import { supabase } from './supabase';
 import React, { useState, useEffect } from "react";
+import { supabase } from "./supabase";
 import "./App.css";
-
-
-
+import ConfirmationModal from "./ConfirmationModal";
+import Tabs from "./Tabs";
 
 function generateTeeTimes(start = 8, end = 20, interval = 8) {
   const times = [];
@@ -22,44 +21,68 @@ function generateTeeTimes(start = 8, end = 20, interval = 8) {
 
 function App() {
   const teeTimes = generateTeeTimes();
+  const days = Array.from({ length: 8 }, (_, i) => {
+    const d = new Date();
+    d.setDate(d.getDate() + i);
+    return d.toISOString().slice(0, 10); // 'YYYY-MM-DD'
+  });
+
+  const [selectedDate, setSelectedDate] = useState(days[0]);
   const [bookings, setBookings] = useState({});
+  const [modalInfo, setModalInfo] = useState(null);
 
   useEffect(() => {
     async function fetchData() {
-      const { data, error } = await supabase.from('tee_times').select('*');
+      const { data, error } = await supabase
+        .from("tee_times")
+        .select("*")
+        .eq("date", selectedDate);
+
       if (error) {
-        console.error('Fetch error:', error);
+        console.error("Fetch error:", error);
       } else {
         const grouped = {};
-        data.forEach(({ time, slot_index, name }) => {
-          grouped[time] = grouped[time] || ["", "", "", ""];
-          grouped[time][slot_index] = name;
+        data.forEach(({ time, slot_index, name, holes, cart }) => {
+          grouped[time] = grouped[time] || [null, null, null, null];
+          grouped[time][slot_index] = { name, holes, cart };
         });
         setBookings(grouped);
       }
     }
-    fetchData();
-  }, []);
-  
 
-  const handleChange = async (time, playerIndex, value) => {
-    const updated = { ...bookings };
-    updated[time] = updated[time] || ["", "", "", ""];
-    updated[time][playerIndex] = value;
-    setBookings(updated);
-  
-    // Upsert (insert or update)
-    const { error } = await supabase
-      .from('tee_times')
-      .upsert({ time, slot_index: playerIndex, name: value });
-    if (error) console.error('Save error:', error);
+    fetchData();
+  }, [selectedDate]);
+
+  const handleInput = (time, playerIndex, value) => {
+    setModalInfo({ time, playerIndex, name: value });
   };
-  
+
+  const confirmBooking = async ({ time, playerIndex, name, holes, cart }) => {
+    const updated = { ...bookings };
+    updated[time] = updated[time] || [null, null, null, null];
+    updated[time][playerIndex] = { name, holes, cart };
+    setBookings(updated);
+
+    const { error } = await supabase.from("tee_times").upsert({
+      time,
+      slot_index: playerIndex,
+      name,
+      holes,
+      cart,
+      date: selectedDate,
+    });
+
+    if (error) console.error("Save error:", error);
+    setModalInfo(null);
+  };
 
   return (
-    <div style={{ padding: "20px", fontFamily: "Arial" }}>
-      <h1>CMW Tee Time Booking Demo</h1>
-      <table border="1" cellPadding="10">
+    <div className="App">
+      <h1>CMW Tee Time Booking</h1>
+
+      <Tabs days={days} selectedDate={selectedDate} onSelect={setSelectedDate} />
+
+      <table>
         <thead>
           <tr>
             <th>Tee Time</th>
@@ -75,15 +98,28 @@ function App() {
                   <input
                     type="text"
                     placeholder={`Player ${i + 1}`}
-                    value={bookings[time]?.[i] || ""}
-                    onChange={(e) => handleChange(time, i, e.target.value)}
+                    value={bookings[time]?.[i]?.name || ""}
+                    onChange={(e) => handleInput(time, i, e.target.value)}
                   />
+                  {bookings[time]?.[i]?.holes && (
+                    <div className="booking-details">
+                      {bookings[time][i].holes} holes, {bookings[time][i].cart}
+                    </div>
+                  )}
                 </td>
               ))}
             </tr>
           ))}
         </tbody>
       </table>
+
+      {modalInfo && (
+        <ConfirmationModal
+          info={modalInfo}
+          onConfirm={confirmBooking}
+          onCancel={() => setModalInfo(null)}
+        />
+      )}
     </div>
   );
 }
