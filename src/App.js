@@ -100,7 +100,8 @@ function App() {
     <div className="App" style={{ fontFamily: 'Segoe UI, sans-serif', backgroundColor: '#f7f9fa', padding: '16px', maxWidth: '100%' }}>
       <img src={LogoImage} alt="SwingSlot Logo" style={{ width: '100%', maxWidth: '100%', height: 'auto', marginBottom: '16px' }} />
 
-      <div style={{ marginBottom: '16px' }}>
+      <div style={{ marginBottom: '16px', overflowX: 'auto', whiteSpace: 'nowrap', display: 'flex', flexWrap: 'nowrap', gap: '8px' }}>
+
         <Tabs days={days} selectedDate={selectedDate} onSelect={setSelectedDate} />
       </div>
 
