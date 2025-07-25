@@ -96,11 +96,28 @@ function App() {
               {[0, 1, 2, 3].map((i) => (
                 <td key={i}>
                   <input
-                    type="text"
-                    placeholder={`Player ${i + 1}`}
-                    value={bookings[time]?.[i]?.name || ""}
-                    onChange={(e) => handleInput(time, i, e.target.value)}
-                  />
+  type="text"
+  placeholder={`Player ${i + 1}`}
+  value={bookings[time]?.[i]?.name || ""}
+  onChange={(e) => {
+    const updated = { ...bookings };
+    updated[time] = updated[time] || [null, null, null, null];
+    updated[time][i] = { ...updated[time][i], name: e.target.value };
+    setBookings(updated);
+  }}
+  onBlur={(e) => {
+    if (e.target.value.trim()) {
+      handleInput(time, i, e.target.value.trim());
+    }
+  }}
+  onKeyDown={(e) => {
+    if (e.key === "Enter" && e.target.value.trim()) {
+      e.preventDefault();
+      handleInput(time, i, e.target.value.trim());
+    }
+  }}
+/>
+
                   {bookings[time]?.[i]?.holes && (
                     <div className="booking-details">
                       {bookings[time][i].holes} holes, {bookings[time][i].cart}
