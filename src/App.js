@@ -3,6 +3,7 @@ import { supabase } from "./supabase";
 import "./App.css";
 import ConfirmationModal from "./ConfirmationModal";
 import Tabs from "./Tabs";
+import LogoImage from "./3b214a8f-175b-4040-9329-9d0ead04f664.png";
 
 function generateTeeTimes(start = 8, end = 20, interval = 8) {
   const times = [];
@@ -24,7 +25,7 @@ function App() {
   const days = Array.from({ length: 8 }, (_, i) => {
     const d = new Date();
     d.setDate(d.getDate() + i);
-    return d.toISOString().slice(0, 10); // 'YYYY-MM-DD'
+    return d.toISOString().slice(0, 10);
   });
 
   const [selectedDate, setSelectedDate] = useState(days[0]);
@@ -53,75 +54,95 @@ function App() {
     fetchData();
   }, [selectedDate]);
 
-  const handleInput = (time, playerIndex, value) => {
-    setModalInfo({ time, playerIndex, name: value });
+  const handleTimeClick = (time) => {
+    const existing = bookings[time];
+    if (existing && existing.some(entry => entry && entry.name)) {
+      alert("Tee Time Already Reserved, Please Call ProShop");
+      return;
+    }
+    setModalInfo({ time });
   };
 
-  const confirmBooking = async ({ time, playerIndex, name, holes, cart }) => {
+  const confirmBooking = async ({ time, players }) => {
     const updated = { ...bookings };
-    updated[time] = updated[time] || [null, null, null, null];
-    updated[time][playerIndex] = { name, holes, cart };
+    updated[time] = [null, null, null, null];
+
+    const rowsToUpsert = players.map((player, index) => {
+      if (!player.name) return null;
+      updated[time][index] = {
+        name: player.name,
+        holes: player.holes,
+        cart: player.cart,
+      };
+      return {
+        time,
+        slot_index: index,
+        name: player.name,
+        holes: player.holes,
+        cart: player.cart,
+        date: selectedDate,
+      };
+    }).filter(Boolean);
+
     setBookings(updated);
 
-    const { error } = await supabase.from("tee_times").upsert({
-      time,
-      slot_index: playerIndex,
-      name,
-      holes,
-      cart,
-      date: selectedDate,
-    });
+    const { error } = await supabase
+      .from("tee_times")
+      .upsert(rowsToUpsert, {
+        onConflict: ["date", "time", "slot_index"]
+      });
 
     if (error) console.error("Save error:", error);
     setModalInfo(null);
   };
 
   return (
-    <div className="App">
-      <h1>CMW Tee Time Booking</h1>
+    <div className="App" style={{ fontFamily: 'Segoe UI, sans-serif', backgroundColor: '#f7f9fa', padding: '30px' }}>
+      <img src={LogoImage} alt="SwingSlot Logo" style={{ height: '240px', marginBottom: '20px' }} />
 
-      <Tabs days={days} selectedDate={selectedDate} onSelect={setSelectedDate} />
+      <div style={{ marginBottom: '20px' }}>
+        <Tabs days={days} selectedDate={selectedDate} onSelect={setSelectedDate} />
+      </div>
 
-      <table>
+      <table style={{ width: '100%', borderCollapse: 'collapse', background: '#ffffff', borderRadius: '10px', boxShadow: '0 2px 8px rgba(0,0,0,0.1)' }}>
         <thead>
-          <tr>
-            <th>Tee Time</th>
-            <th colSpan="4">Players</th>
+          <tr style={{ backgroundColor: '#4CAF50', color: 'white', fontFamily: '"Segoe UI", sans-serif' }}>
+            <th style={{ padding: '14px', textAlign: 'left', borderTopLeftRadius: '10px', fontSize: '1rem', fontWeight: '600', letterSpacing: '0.5px' }}>Tee Time</th>
+            <th colSpan="4" style={{ padding: '14px', textAlign: 'center', borderTopRightRadius: '10px', fontSize: '1rem', fontWeight: '600', letterSpacing: '0.5px' }}>Players</th>
           </tr>
         </thead>
         <tbody>
           {teeTimes.map((time) => (
-            <tr key={time}>
-              <td>{time}</td>
+            <tr key={time} style={{ borderBottom: '1px solid #eee' }}>
+              <td style={{ padding: '10px' }}>
+                <button
+                  onClick={() => handleTimeClick(time)}
+                  disabled={bookings[time]?.some(entry => entry && entry.name)}
+                  className="time-button"
+                  style={{
+                    padding: '8px 12px',
+                    borderRadius: '6px',
+                    background: bookings[time]?.some(entry => entry && entry.name) ? '#ccc' : '#2f855a',
+                    color: 'white',
+                    border: 'none',
+                    cursor: bookings[time]?.some(entry => entry && entry.name) ? 'not-allowed' : 'pointer',
+                    fontWeight: 'bold'
+                  }}
+                >
+                  {time}
+                </button>
+              </td>
               {[0, 1, 2, 3].map((i) => (
-                <td key={i}>
-                  <input
-  type="text"
-  placeholder={`Player ${i + 1}`}
-  value={bookings[time]?.[i]?.name || ""}
-  onChange={(e) => {
-    const updated = { ...bookings };
-    updated[time] = updated[time] || [null, null, null, null];
-    updated[time][i] = { ...updated[time][i], name: e.target.value };
-    setBookings(updated);
-  }}
-  onBlur={(e) => {
-    if (e.target.value.trim()) {
-      handleInput(time, i, e.target.value.trim());
-    }
-  }}
-  onKeyDown={(e) => {
-    if (e.key === "Enter" && e.target.value.trim()) {
-      e.preventDefault();
-      handleInput(time, i, e.target.value.trim());
-    }
-  }}
-/>
-
-                  {bookings[time]?.[i]?.holes && (
-                    <div className="booking-details">
-                      {bookings[time][i].holes} holes, {bookings[time][i].cart}
-                    </div>
+                <td key={i} style={{ padding: '10px', textAlign: 'center' }}>
+                  {bookings[time]?.[i]?.name ? (
+                    <>
+                      <strong>{bookings[time][i].name}</strong>
+                      <div className="booking-details" style={{ fontSize: '0.85em', color: '#555' }}>
+                        {bookings[time][i].holes} holes, {bookings[time][i].cart}
+                      </div>
+                    </>
+                  ) : (
+                    <span style={{ color: "#aaa" }}>—</span>
                   )}
                 </td>
               ))}
