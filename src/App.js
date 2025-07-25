@@ -97,65 +97,69 @@ function App() {
   };
 
   return (
-    <div className="App" style={{ fontFamily: 'Segoe UI, sans-serif', backgroundColor: '#f7f9fa', padding: '30px' }}>
-      <img src={LogoImage} alt="SwingSlot Logo" style={{ height: '240px', marginBottom: '20px' }} />
+    <div className="App" style={{ fontFamily: 'Segoe UI, sans-serif', backgroundColor: '#f7f9fa', padding: '16px', maxWidth: '100%' }}>
+      <img src={LogoImage} alt="SwingSlot Logo" style={{ width: '100%', maxWidth: '100%', height: 'auto', marginBottom: '16px' }} />
 
-      <div style={{ marginBottom: '20px' }}>
+      <div style={{ marginBottom: '16px' }}>
         <Tabs days={days} selectedDate={selectedDate} onSelect={setSelectedDate} />
       </div>
 
-      <table style={{ width: '100%', borderCollapse: 'collapse', background: '#ffffff', borderRadius: '10px', boxShadow: '0 2px 8px rgba(0,0,0,0.1)' }}>
-        <thead>
-          <tr style={{ backgroundColor: '#4CAF50', color: 'white', fontFamily: '"Segoe UI", sans-serif' }}>
-            <th style={{ padding: '14px', textAlign: 'left', borderTopLeftRadius: '10px', fontSize: '1rem', fontWeight: '600', letterSpacing: '0.5px' }}>Tee Time</th>
-            <th colSpan="4" style={{ padding: '14px', textAlign: 'center', borderTopRightRadius: '10px', fontSize: '1rem', fontWeight: '600', letterSpacing: '0.5px' }}>Players</th>
-          </tr>
-        </thead>
-        <tbody>
-          {teeTimes.map((time) => (
-            <tr key={time} style={{ borderBottom: '1px solid #eee' }}>
-              <td style={{ padding: '10px' }}>
-                <button
-                  onClick={() => handleTimeClick(time)}
-                  disabled={bookings[time]?.some(entry => entry && entry.name)}
-                  className="time-button"
-                  style={{
-                    padding: '8px 12px',
-                    borderRadius: '6px',
-                    background: bookings[time]?.some(entry => entry && entry.name) ? '#ccc' : '#2f855a',
-                    color: 'white',
-                    border: 'none',
-                    cursor: bookings[time]?.some(entry => entry && entry.name) ? 'not-allowed' : 'pointer',
-                    fontWeight: 'bold'
-                  }}
-                >
-                  {time}
-                </button>
-              </td>
-              {[0, 1, 2, 3].map((i) => (
-                <td key={i} style={{ padding: '10px', textAlign: 'center' }}>
-                  {bookings[time]?.[i]?.name ? (
-                    <>
-                      <strong>{bookings[time][i].name}</strong>
-                      <div className="booking-details" style={{ fontSize: '0.85em', color: '#555' }}>
-                        {bookings[time][i].holes} holes, {bookings[time][i].cart}
-                      </div>
-                    </>
-                  ) : (
-                    <span style={{ color: "#aaa" }}>—</span>
-                  )}
-                </td>
-              ))}
+      <div style={{ overflowX: 'auto' }}>
+        <table style={{ width: '100%', minWidth: '360px', borderCollapse: 'collapse', background: '#ffffff', borderRadius: '10px', boxShadow: '0 2px 8px rgba(0,0,0,0.1)' }}>
+          <thead>
+            <tr style={{ backgroundColor: '#4CAF50', color: 'white', fontFamily: '"Segoe UI", sans-serif' }}>
+              <th style={{ padding: '12px', textAlign: 'left', borderTopLeftRadius: '10px', fontSize: '1rem', fontWeight: '600' }}>Tee Time</th>
+              <th colSpan="4" style={{ padding: '12px', textAlign: 'center', borderTopRightRadius: '10px', fontSize: '1rem', fontWeight: '600' }}>Players</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {teeTimes.map((time) => (
+              <tr key={time} style={{ borderBottom: '1px solid #eee' }}>
+                <td style={{ padding: '10px' }}>
+                  <button
+                    onClick={() => handleTimeClick(time)}
+                    disabled={bookings[time]?.some(entry => entry && entry.name)}
+                    className="time-button"
+                    style={{
+                      padding: '8px 12px',
+                      borderRadius: '6px',
+                      background: bookings[time]?.some(entry => entry && entry.name) ? '#ccc' : '#2f855a',
+                      color: 'white',
+                      border: 'none',
+                      cursor: bookings[time]?.some(entry => entry && entry.name) ? 'not-allowed' : 'pointer',
+                      fontWeight: 'bold',
+                      fontSize: '0.9rem'
+                    }}
+                  >
+                    {time}
+                  </button>
+                </td>
+                {[0, 1, 2, 3].map((i) => (
+                  <td key={i} style={{ padding: '10px', textAlign: 'center', fontSize: '0.85rem' }}>
+                    {bookings[time]?.[i]?.name ? (
+                      <>
+                        <strong>{bookings[time][i].name}</strong>
+                        <div className="booking-details" style={{ fontSize: '0.8em', color: '#555' }}>
+                          {bookings[time][i].holes} holes, {bookings[time][i].cart}
+                        </div>
+                      </>
+                    ) : (
+                      <span style={{ color: "#aaa" }}>—</span>
+                    )}
+                  </td>
+                ))}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
 
       {modalInfo && (
         <ConfirmationModal
           info={modalInfo}
           onConfirm={confirmBooking}
           onCancel={() => setModalInfo(null)}
+          isMobile={true}
         />
       )}
     </div>
